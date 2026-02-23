@@ -1,0 +1,1314 @@
+<html lang="en"><head><script id="__seed__">(function(){
+  try {
+    var raw = atob("W10=");
+    var ev = JSON.parse(decodeURIComponent(escape(raw)));
+    localStorage.setItem("cal_events_v1", JSON.stringify(ev));
+  } catch(e){}
+  window.__calMode = "view";
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solomon Society 2026 Calendar (View Only)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&amp;family=DM+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f0f5ff;
+    --surface2: #dce8ff;
+    --border: #b3caf5;
+    --accent: #f97316;
+    --accent2: #1d4ed8;
+    --text: #1e3a6e;
+    --muted: #5a7db5;
+    --today: #f9731622;
+    --event-colors: #f97316, #1d4ed8, #f59e0b, #3b82f6, #fb923c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem;
+    background-image: linear-gradient(180deg, #eef4ff 0%, #ffffff 100%);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg, #f97316, #3b82f6) 1;
+    padding-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+  .btn {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-accent:hover { opacity: 0.88; color: #fff; }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .month-title-wrap {
+    position: relative;
+    min-width: 220px;
+    text-align: center;
+  }
+
+  .month-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .month-title:hover { background: var(--surface2); }
+  .month-title .caret { font-size: 0.75rem; opacity: 0.6; transition: transform 0.2s; }
+  .month-title.open .caret { transform: rotate(180deg); }
+
+  .month-picker-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(30,58,110,0.18);
+    z-index: 200;
+    width: 300px;
+    padding: 1rem;
+    animation: pop 0.15s ease;
+  }
+  .month-picker-dropdown.open { display: block; }
+
+  .picker-year-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .picker-year-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .picker-nav-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .picker-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+  }
+  .month-option {
+    padding: 0.45rem 0.25rem;
+    border-radius: 7px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text);
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .month-option:hover { background: var(--surface2); border-color: var(--border); }
+  .month-option.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .month-option.current-month { border-color: var(--accent2); color: var(--accent2); font-weight: 700; }
+
+  .nav-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .day-header {
+    background: #1d4ed8;
+    text-align: center;
+    padding: 0.75rem 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .day-cell {
+    background: var(--surface);
+    min-height: 110px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .day-cell:hover { background: var(--surface2); }
+  .day-cell.other-month .day-num { color: var(--muted); opacity: 0.4; }
+  .day-cell.today { background: var(--today); }
+  .day-cell.today .day-num {
+    background: var(--accent);
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  .day-num {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .event-chip {
+    display: block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.15s;
+    color: #fff;
+  }
+  .event-chip:hover { opacity: 0.8; }
+
+  .more-events {
+    font-size: 0.65rem;
+    color: var(--muted);
+    padding: 1px 4px;
+  }
+
+  /* Modal */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0008;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem;
+    position: relative;
+    animation: pop 0.2s ease;
+  }
+  @keyframes pop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none; border: none;
+    color: var(--muted); font-size: 1.4rem;
+    cursor: pointer; line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem; margin-top: 1rem; }
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .color-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .color-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .color-dot:hover, .color-dot.selected { transform: scale(1.2); border-color: var(--text); }
+
+  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; justify-content: flex-end; }
+
+  .delete-btn { background: #c87e7e22; color: #c87e7e; border-color: #c87e7e44; margin-right: auto; }
+  .delete-btn:hover { background: #c87e7e44; color: #c87e7e; border-color: #c87e7e; }
+
+  /* Event list panel */
+  .day-events-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    display: none;
+  }
+  .day-events-panel.open { display: block; }
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .event-row:last-child { border-bottom: none; }
+  .event-row:hover { opacity: 0.8; }
+  .event-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .event-info { flex: 1; }
+  .event-name { font-weight: 500; font-size: 0.9rem; }
+  .event-time { font-size: 0.75rem; color: var(--muted); }
+
+  /* Share modal */
+  .share-url {
+    display: flex; gap: 0.5rem; margin-top: 0.5rem;
+  }
+  .share-url input { flex: 1; }
+  .copy-hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; }
+
+  .share-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-top: 1rem;
+  }
+  .share-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .share-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .badge-view { background: #dbeafe; color: #1d4ed8; }
+  .badge-edit { background: #ffedd5; color: #c2410c; }
+  .share-card-title { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+  .share-card-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.75rem; line-height: 1.4; }
+  .share-row { display: flex; gap: 0.5rem; }
+  .share-row input { flex: 1; font-size: 0.78rem; }
+  .copy-feedback { font-size: 0.72rem; color: #16a34a; margin-top: 0.35rem; min-height: 1em; }
+
+  @media (max-width: 700px) {
+    body { padding: 1rem; }
+    .day-cell { min-height: 70px; padding: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Solomon Society 2026 Calendar</h1>
+  <div class="header-actions">
+    <button class="btn" onclick="openShare()">🔗 Share</button>
+    <button class="btn btn-accent" onclick="openAddEvent()">+ Add Event</button>
+  </div>
+</header>
+
+<div class="nav-controls">
+  <button class="nav-btn" onclick="changeMonth(-1)">←</button>
+  <div class="month-title-wrap">
+    <div class="month-title" id="monthTitle" onclick="togglePicker(event)">
+      <span id="monthTitleText">March 2026</span>
+      <span class="caret">▼</span>
+    </div>
+    <div class="month-picker-dropdown" id="monthPicker">
+      <div class="picker-year-nav">
+        <button class="picker-nav-btn" onclick="pickerChangeYear(-1, event)">←</button>
+        <span class="picker-year-label" id="pickerYear"></span>
+        <button class="picker-nav-btn" onclick="pickerChangeYear(1, event)">→</button>
+      </div>
+      <div class="month-grid" id="monthGrid"></div>
+    </div>
+  </div>
+  <button class="nav-btn" onclick="changeMonth(1)">→</button>
+  <button class="btn" onclick="goToday()">Today</button>
+</div><div id="calLegend" style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; font-size: 0.8rem; align-items: center;">
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#1d4ed8;display:inline-block"></span> US Federal Holiday
+    </span>
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;display:inline-block"></span> Jewish Holiday
+    </span>
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#f97316;display:inline-block"></span> Solomon Society Events
+    </span>
+  </div>
+
+<div class="calendar-grid" id="calGrid"><div class="day-header">Sun</div><div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-cell"><div class="day-num">1</div><span class="event-chip" style="background: rgb(124, 58, 237); font-size: 0.62rem;">Purim 🕍</span></div><div class="day-cell"><div class="day-num">2</div></div><div class="day-cell"><div class="day-num">3</div></div><div class="day-cell"><div class="day-num">4</div></div><div class="day-cell"><div class="day-num">5</div></div><div class="day-cell"><div class="day-num">6</div></div><div class="day-cell"><div class="day-num">7</div></div><div class="day-cell"><div class="day-num">8</div></div><div class="day-cell"><div class="day-num">9</div></div><div class="day-cell"><div class="day-num">10</div></div><div class="day-cell"><div class="day-num">11</div></div><div class="day-cell"><div class="day-num">12</div></div><div class="day-cell"><div class="day-num">13</div></div><div class="day-cell"><div class="day-num">14</div></div><div class="day-cell"><div class="day-num">15</div></div><div class="day-cell"><div class="day-num">16</div></div><div class="day-cell"><div class="day-num">17</div></div><div class="day-cell"><div class="day-num">18</div></div><div class="day-cell"><div class="day-num">19</div></div><div class="day-cell"><div class="day-num">20</div></div><div class="day-cell"><div class="day-num">21</div></div><div class="day-cell"><div class="day-num">22</div></div><div class="day-cell"><div class="day-num">23</div></div><div class="day-cell"><div class="day-num">24</div></div><div class="day-cell"><div class="day-num">25</div></div><div class="day-cell"><div class="day-num">26</div></div><div class="day-cell"><div class="day-num">27</div></div><div class="day-cell"><div class="day-num">28</div></div><div class="day-cell"><div class="day-num">29</div></div><div class="day-cell"><div class="day-num">30</div></div><div class="day-cell"><div class="day-num">31</div><span class="event-chip" style="background: rgb(124, 58, 237); font-size: 0.62rem;">Passover (Pesach) – Day 1 🕍</span></div><div class="day-cell other-month"><div class="day-num">1</div></div><div class="day-cell other-month"><div class="day-num">2</div></div><div class="day-cell other-month"><div class="day-num">3</div></div><div class="day-cell other-month"><div class="day-num">4</div></div></div>
+
+<div class="day-events-panel" id="dayPanel">
+  <div class="panel-title">
+    <span id="panelDate">Monday, February 23, 2026</span>
+    <button class="btn btn-accent" onclick="openAddEventOnDate(selectedDate)" style="font-size:0.8rem;padding:0.4rem 0.9rem">+ Add</button>
+  </div>
+  <div id="panelEvents"><p style="color:var(--muted);font-size:0.85rem;padding:0.5rem 0">No events. Add one!</p></div>
+</div>
+
+<!-- Add/Edit Event Modal -->
+<div class="overlay" id="eventOverlay" onclick="closeEventModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEventModal()">×</button>
+    <h2 id="modalTitle">Add Event</h2>
+
+    <input type="hidden" id="editId">
+
+    <label>Event Name *</label>
+    <input type="text" id="evName" placeholder="e.g. Team Meeting">
+
+    <label>Date *</label>
+    <input type="date" id="evDate">
+
+    <label>Time (optional)</label>
+    <input type="time" id="evTime">
+
+    <label>Description</label>
+    <textarea id="evDesc" placeholder="Optional notes..."></textarea>
+
+    <label>Color</label>
+    <div class="color-picker" id="colorPicker"></div>
+
+    <div id="deleteConfirm" style="display:none;background:#fff0f0;border:1px solid #f5c6c6;border-radius:8px;padding:0.75rem 1rem;margin-top:1rem;display:none;align-items:center;justify-content:space-between;gap:0.75rem;">
+      <span style="font-size:0.85rem;color:#b91c1c;font-weight:500;">Delete this event?</span>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn" style="font-size:0.8rem;padding:0.35rem 0.8rem" onclick="cancelDelete()">Cancel</button>
+        <button class="btn" style="font-size:0.8rem;padding:0.35rem 0.8rem;background:#b91c1c;color:#fff;border-color:#b91c1c" onclick="confirmDelete()">Yes, Delete</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn delete-btn" id="deleteBtn" onclick="promptDelete()" style="display:none">Delete</button>
+      <button class="btn" onclick="closeEventModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="saveEvent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div class="overlay " id="shareOverlay" onclick="closeShare(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeShare()">×</button>
+    <h2>Share Calendar</h2>
+    <p style="color:var(--muted);font-size:0.82rem;margin-top:0.4rem;line-height:1.5">Download a shareable HTML file. Send it by email, upload to Google Drive, Dropbox, or any file host — anyone can open it directly in their browser.</p>
+
+    <!-- View Only -->
+    <div class="share-card">
+      <div class="share-card-header">
+        <span class="share-badge badge-view">👁 View Only</span>
+        <span class="share-card-title">Read-only access</span>
+      </div>
+      <p class="share-card-desc">Recipients can browse the calendar and see all events — but cannot add, edit, or delete anything.</p>
+      <button class="btn" style="width:100%;margin-top:0.25rem" onclick="downloadCalendar('view')">⬇ Download View-Only File</button>
+      <div class="copy-feedback" id="copyHintView"></div>
+    </div>
+
+    <!-- Edit Access -->
+    <div class="share-card">
+      <div class="share-card-header">
+        <span class="share-badge badge-edit">✏️ Edit Access</span>
+        <span class="share-card-title">Can add &amp; edit events</span>
+      </div>
+      <p class="share-card-desc">Recipients can view the calendar <strong>and</strong> add, edit, or delete Solomon Society Events. Holidays are always protected.</p>
+      <button class="btn btn-accent" style="width:100%;margin-top:0.25rem" onclick="downloadCalendar('edit')">⬇ Download Edit-Access File</button>
+      <div class="copy-feedback" id="copyHintEdit"></div>
+    </div>
+
+    <p style="color:var(--muted);font-size:0.75rem;margin-top:1rem;line-height:1.5">💡 <strong>Tip:</strong> Upload the downloaded file to Google Drive and use "Get shareable link" to create a real web link anyone can open.</p>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#f97316','#1d4ed8','#f59e0b','#3b82f6','#fb923c','#1e40af','#fbbf24'];
+const US_HOLIDAY_COLOR   = '#1d4ed8'; // blue for US holidays
+const JEW_HOLIDAY_COLOR  = '#7c3aed'; // purple for Jewish holidays
+
+let events = [];
+let currentDate = new Date();
+let selectedDate = null;
+
+// ─── US Federal Holiday Calculations ────────────────────────────────────────
+
+function fmt(y, m, d) {
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+// day of week: 0=Sun … 6=Sat
+function dow(y, m, d) { return new Date(y, m-1, d).getDay(); }
+
+// nth weekday of month (n=1..5, wd=0..6)
+function nthWeekday(y, m, n, wd) {
+  let count = 0;
+  for (let d = 1; d <= 31; d++) {
+    const dt = new Date(y, m-1, d);
+    if (dt.getMonth() !== m-1) break;
+    if (dt.getDay() === wd) { count++; if (count === n) return d; }
+  }
+}
+
+// last weekday of month
+function lastWeekday(y, m, wd) {
+  const dim = new Date(y, m, 0).getDate();
+  for (let d = dim; d >= 1; d--) {
+    if (new Date(y, m-1, d).getDay() === wd) return d;
+  }
+}
+
+// observed date: if date falls on Sat → Fri, Sun → Mon
+function observed(y, m, d) {
+  const w = dow(y, m, d);
+  if (w === 6) return fmt(y, m, d-1);
+  if (w === 0) return fmt(y, m, d+1);
+  return fmt(y, m, d);
+}
+
+function getUSHolidays(y) {
+  const holidays = [];
+  const add = (date, name) => holidays.push({ date, name, type: 'us' });
+
+  // New Year's Day
+  add(observed(y, 1, 1), "New Year's Day 🇺🇸");
+
+  // Martin Luther King Jr. Day – 3rd Monday Jan
+  add(fmt(y, 1, nthWeekday(y, 1, 3, 1)), "MLK Day 🇺🇸");
+
+  // Presidents' Day – 3rd Monday Feb
+  add(fmt(y, 2, nthWeekday(y, 2, 3, 1)), "Presidents' Day 🇺🇸");
+
+  // Memorial Day – last Monday May
+  add(fmt(y, 5, lastWeekday(y, 5, 1)), "Memorial Day 🇺🇸");
+
+  // Juneteenth – June 19
+  add(observed(y, 6, 19), "Juneteenth 🇺🇸");
+
+  // Independence Day – July 4
+  add(observed(y, 7, 4), "Independence Day 🇺🇸");
+
+  // Labor Day – 1st Monday Sep
+  add(fmt(y, 9, nthWeekday(y, 9, 1, 1)), "Labor Day 🇺🇸");
+
+  // Columbus Day – 2nd Monday Oct
+  add(fmt(y, 10, nthWeekday(y, 10, 2, 1)), "Columbus Day 🇺🇸");
+
+  // Veterans Day – Nov 11
+  add(observed(y, 11, 11), "Veterans Day 🇺🇸");
+
+  // Thanksgiving – 4th Thursday Nov
+  add(fmt(y, 11, nthWeekday(y, 11, 4, 4)), "Thanksgiving Day 🇺🇸");
+
+  // Christmas – Dec 25
+  add(observed(y, 12, 25), "Christmas Day 🇺🇸");
+
+  return holidays;
+}
+
+// ─── Hebrew Calendar / Jewish Holiday Calculations ──────────────────────────
+// Uses the Meeus/Jones/Butcher algorithm adapted for Hebrew calendar.
+// Hebrew months: Tishrei(1) Cheshvan(2) Kislev(3) Tevet(4) Shevat(5)
+// Adar I(6) [leap only] Adar/Adar II(6/7) Nisan(7/8) Iyar Sivan Tammuz Av Elul
+
+// Returns Julian Day Number for Gregorian date
+function gregorianToJD(y, m, d) {
+  if (m <= 2) { y--; m += 12; }
+  const A = Math.floor(y/100);
+  const B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + d + B - 1524.5;
+}
+
+// JD to Gregorian
+function jdToGregorian(jd) {
+  const z = Math.floor(jd + 0.5);
+  const a = Math.floor((z - 1867216.25)/36524.25);
+  const aa = z + 1 + a - Math.floor(a/4);
+  const b = aa + 1524;
+  const c = Math.floor((b - 122.1)/365.25);
+  const d = Math.floor(365.25*c);
+  const e = Math.floor((b-d)/30.6001);
+  const day = b - d - Math.floor(30.6001*e);
+  const month = e < 14 ? e-1 : e-13;
+  const year = month > 2 ? c-4716 : c-4715;
+  return { y: year, m: month, d: day };
+}
+
+// Hebrew epoch (1 Tishrei 1 AM) in JD
+const HEBREW_EPOCH = 347995.5;
+
+// Is Hebrew year a leap year?
+function hebrewLeapYear(y) { return (7*y + 1) % 19 < 7; }
+
+// Number of months in Hebrew year
+function hebrewMonthsInYear(y) { return hebrewLeapYear(y) ? 13 : 12; }
+
+// Days in Hebrew year
+function hebrewDaysInYear(y) {
+  return hebrewToJD(y+1, 7, 1) - hebrewToJD(y, 7, 1);
+}
+
+// Delay of week day from epoch
+function hebrewDelay1(y) {
+  const months = Math.floor((235*y - 234)/19);
+  const parts = 12084 + 13753*months;
+  let day = months*29 + Math.floor(parts/25920);
+  if ((3*(day+1)) % 7 < 3) day++;
+  return day;
+}
+
+function hebrewDelay2(y) {
+  const last = hebrewDelay1(y-1);
+  const present = hebrewDelay1(y);
+  const next = hebrewDelay1(y+1);
+  if (next - present === 356) return 2;
+  if (present - last === 382) return 1;
+  return 0;
+}
+
+function hebrewYearStart(y) {
+  return HEBREW_EPOCH + hebrewDelay1(y) + hebrewDelay2(y);
+}
+
+// Days in Hebrew month
+function hebrewDaysInMonth(month, year) {
+  // month: 1=Nisan…7=Tishrei in traditional counting, but we use 7=Tishrei as start
+  // We'll use: 1=Tishrei, 2=Cheshvan, 3=Kislev, 4=Tevet, 5=Shevat,
+  //            6=Adar I (leap) / Adar (non-leap), 7=Adar II (leap) / Nisan,
+  //            8=Nisan (leap) … this gets messy, let's use standard numbering:
+  // Month numbers: 1=Nisan,2=Iyar,3=Sivan,4=Tammuz,5=Av,6=Elul,
+  //                7=Tishrei,8=Cheshvan,9=Kislev,10=Tevet,11=Shevat,
+  //                12=Adar (or Adar I in leap),13=Adar II (leap only)
+  switch(month) {
+    case 1: return 30; // Nisan
+    case 2: return 29; // Iyar
+    case 3: return 30; // Sivan
+    case 4: return 29; // Tammuz
+    case 5: return 30; // Av
+    case 6: return 29; // Elul
+    case 7: return 30; // Tishrei
+    case 8: // Cheshvan – 29 or 30
+      return hebrewDaysInYearCalc(year) % 10 === 5 ? 30 : 29;
+    case 9: // Kislev – 30 or 29
+      return hebrewDaysInYearCalc(year) % 10 === 3 ? 29 : 30;
+    case 10: return 29; // Tevet
+    case 11: return 30; // Shevat
+    case 12: return hebrewLeapYear(year) ? 30 : 29; // Adar I or Adar
+    case 13: return 29; // Adar II (leap only)
+    default: return 29;
+  }
+}
+
+function hebrewDaysInYearCalc(y) {
+  return hebrewToJD(y+1,7,1) - hebrewToJD(y,7,1);
+}
+
+// Hebrew date (month 1=Nisan…13, year) to Julian Day
+function hebrewToJD(year, month, day) {
+  // months from Tishrei: 7,8,9,10,11,12,[13],1,2,3,4,5,6
+  const monthsInOrder = hebrewLeapYear(year)
+    ? [7,8,9,10,11,12,13,1,2,3,4,5,6]
+    : [7,8,9,10,11,12,1,2,3,4,5,6];
+
+  let jd = hebrewYearStart(year) + day - 1;
+  for (const m of monthsInOrder) {
+    if (m === month) break;
+    jd += hebrewDaysInMonth(m, year);
+  }
+  return jd;
+}
+
+// Convert Hebrew date to Gregorian string YYYY-MM-DD
+function hebrewToGregorian(hyear, hmonth, hday) {
+  const jd = hebrewToJD(hyear, hmonth, hday);
+  const g = jdToGregorian(jd);
+  return fmt(g.y, g.m, g.d);
+}
+
+// Get the Hebrew year that starts in a given Gregorian year (Tishrei ≈ Sep/Oct)
+// Hebrew year 5786 starts in Gregorian 2025, 5787 in 2026, etc.
+// Formula: HY ≈ GY + 3760 (approximate, Tishrei is in GY or GY+1 depending on month)
+function getHebrewYearForGregorianYear(gy) {
+  // The Hebrew year that has Tishrei in gy is approximately gy+3761
+  // But holidays span two Hebrew years per Gregorian year.
+  // Return the Hebrew year whose Tishrei falls in gy.
+  return gy + 3761;
+}
+
+// Advance date string by N days
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return fmt(d.getFullYear(), d.getMonth()+1, d.getDate());
+}
+
+function getJewishHolidays(gy) {
+  const holidays = [];
+  const add = (date, name) => {
+    if (date && date.startsWith(String(gy))) {
+      holidays.push({ date, name, type: 'jewish' });
+    }
+  };
+  const addAny = (date, name) => {
+    if (date) holidays.push({ date, name, type: 'jewish' });
+  };
+
+  // We compute holidays from two Hebrew years that overlap with gy:
+  // HY = gy+3761 (Tishrei in gy), and HY-1 (Nisan-Elul fall in gy)
+  const hy_tishrei = getHebrewYearForGregorianYear(gy); // Tishrei falls in gy
+  const hy_nisan = hy_tishrei - 1; // Nisan/spring of gy belongs to this HY
+
+  // --- From hy_nisan: Nisan through Elul (spring/summer of gy) ---
+  // Month 1=Nisan, 7=Tishrei in our numbering
+  const purim = hebrewToGregorian(hy_nisan, hebrewLeapYear(hy_nisan) ? 13 : 12, 14);
+  add(purim, 'Purim 🕍');
+
+  const pesach1 = hebrewToGregorian(hy_nisan, 1, 15);
+  add(pesach1, 'Passover (Pesach) – Day 1 🕍');
+  add(addDays(pesach1,6), 'Passover – Day 7 🕍');
+  add(addDays(pesach1,7), 'Passover – Day 8 (Diaspora) 🕍');
+
+  const yomHashoah = hebrewToGregorian(hy_nisan, 1, 27);
+  add(yomHashoah, 'Yom HaShoah 🕍');
+
+  const yomHazikaron = hebrewToGregorian(hy_nisan, 2, 4);
+  add(yomHazikaron, "Yom HaZikaron 🕍");
+
+  const yomHaatzmaut = hebrewToGregorian(hy_nisan, 2, 5);
+  add(yomHaatzmaut, "Yom Ha'atzmaut 🕍");
+
+  const lagBaomer = hebrewToGregorian(hy_nisan, 2, 18);
+  add(lagBaomer, "Lag B'Omer 🕍");
+
+  const yomYerushalayim = hebrewToGregorian(hy_nisan, 2, 28);
+  add(yomYerushalayim, 'Yom Yerushalayim 🕍');
+
+  const shavuot1 = hebrewToGregorian(hy_nisan, 3, 6);
+  add(shavuot1, 'Shavuot – Day 1 🕍');
+  add(addDays(shavuot1,1), 'Shavuot – Day 2 🕍');
+
+  const tishaBAv = hebrewToGregorian(hy_nisan, 5, 9);
+  add(tishaBAv, "Tisha B'Av (Fast) 🕍");
+
+  // --- From hy_tishrei: Tishrei through Adar (fall/winter of gy) ---
+  const roshHashana1 = hebrewToGregorian(hy_tishrei, 7, 1);
+  add(roshHashana1, 'Rosh Hashanah – Day 1 🍎🕍');
+  add(addDays(roshHashana1,1), 'Rosh Hashanah – Day 2 🍎🕍');
+
+  const tzomGedaliah = hebrewToGregorian(hy_tishrei, 7, 3);
+  // If Tzom Gedaliah falls on Shabbat, it's moved to the 4th
+  const tzomGedDate = new Date(tzomGedaliah+'T12:00:00').getDay() === 6 
+    ? addDays(tzomGedaliah,1) : tzomGedaliah;
+  add(tzomGedDate, 'Tzom Gedaliah (Fast) 🕍');
+
+  const yomKippur = hebrewToGregorian(hy_tishrei, 7, 10);
+  add(yomKippur, 'Yom Kippur 🕍');
+
+  const sukkot1 = hebrewToGregorian(hy_tishrei, 7, 15);
+  add(sukkot1, 'Sukkot – Day 1 🕍');
+  add(addDays(sukkot1,1), 'Sukkot – Day 2 🕍');
+  add(addDays(sukkot1,6), 'Hoshana Raba 🕍');
+  add(addDays(sukkot1,7), 'Shemini Atzeret 🕍');
+  add(addDays(sukkot1,8), 'Simchat Torah 🕍');
+
+  // Chanukah: 25 Kislev for 8 days
+  const chanukah1 = hebrewToGregorian(hy_tishrei, 9, 25);
+  add(chanukah1, 'Chanukah – Night 1 🕎🕍');
+  for (let i=1; i<8; i++) add(addDays(chanukah1,i), `Chanukah – Night ${i+1} 🕎🕍`);
+
+  const tzomTevet = hebrewToGregorian(hy_tishrei, 10, 10);
+  add(tzomTevet, 'Tzom 10 Tevet (Fast) 🕍');
+
+  const tuBishvat = hebrewToGregorian(hy_tishrei, 11, 15);
+  add(tuBishvat, "Tu B'Shvat 🌳🕍");
+
+  // Purim of the NEXT spring also partially falls in gy sometimes – skip, handled by next gy
+
+  return holidays;
+}
+
+// ─── Holiday cache ───────────────────────────────────────────────────────────
+const holidayCache = {};
+function getHolidaysForYear(y) {
+  if (!holidayCache[y]) {
+    const us = getUSHolidays(y);
+    const jewish = getJewishHolidays(y);
+    holidayCache[y] = [...us, ...jewish];
+  }
+  return holidayCache[y];
+}
+
+function getHolidaysForDate(dateStr) {
+  const y = parseInt(dateStr.split('-')[0]);
+  return getHolidaysForYear(y).filter(h => h.date === dateStr);
+}
+
+// ─── User Event Storage ──────────────────────────────────────────────────────
+function getStorageKey() { return 'cal_events_v1'; }
+
+let isViewOnly = (window.__calMode === 'view');
+
+function loadEvents() {
+  // __calMode is injected by the seed script in downloaded files
+  isViewOnly = (window.__calMode === 'view');
+  try {
+    const stored = localStorage.getItem(getStorageKey());
+    if (stored) events = JSON.parse(stored);
+  } catch(e) {}
+}
+
+function saveToStorage() {
+  try { localStorage.setItem(getStorageKey(), JSON.stringify(events)); } catch(e) {}
+}
+
+function downloadCalendar(mode) {
+  // Serialize events safely - no template literals with user data
+  const eventsData = JSON.stringify(events);
+
+  // Get the full page HTML
+  let out = document.documentElement.outerHTML;
+
+  // The seed script is built using string concatenation only (no template literals)
+  // to avoid any $ or backtick characters in eventsData breaking the script.
+  // We encode events as base64 to make it safe to embed.
+  const eventsB64 = btoa(unescape(encodeURIComponent(eventsData)));
+
+  const seedOpen  = '<' + 'script id="__seed__">';
+  const seedClose = '<' + '/script>';
+  const seedBody = [
+    '(function(){',
+    '  try {',
+    '    var raw = atob("' + eventsB64 + '");',
+    '    var ev = JSON.parse(decodeURIComponent(escape(raw)));',
+    '    localStorage.setItem("cal_events_v1", JSON.stringify(ev));',
+    '  } catch(e){}',
+    '  window.__calMode = "' + mode + '";',
+    '})();'
+  ].join('\n');
+
+  const seedScript = seedOpen + seedBody + seedClose;
+
+  // Insert seed right after <head>
+  out = out.replace('<head>', '<head>' + seedScript);
+
+  // Patch isViewOnly to read from window.__calMode
+  out = out.replace(
+    "let isViewOnly = (window.__calMode === 'view');",
+    "let isViewOnly = false;"
+  );
+  out = out.replace(
+    "let isViewOnly = false;",
+    "let isViewOnly = (window.__calMode === 'view');"
+  );
+
+  // Update title
+  const modeLabel = mode === 'view' ? ' (View Only)' : ' (Editable)';
+  out = out.replace(
+    '<title>Solomon Society 2026 Calendar</title>',
+    '<title>Solomon Society 2026 Calendar' + modeLabel + '</title>'
+  );
+
+  // Strip any open overlays / panels baked into the snapshot
+  out = out.replace(/(<div[^>]*class="overlay[^"]*)\s*open\s*/g, '$1');
+  out = out.replace(/(<div[^>]*class="[^"]*open[^"]*"\s*id="(?:shareOverlay|eventOverlay))/g, 
+    function(m) { return m.replace(' open', ''); });
+  // Simpler catch-all: remove 'open' from overlay and panel divs
+  out = out.replace(/ class="overlay"/g, ' class="overlay"');
+  out = out.replace(/ class="day-events-panel"/g, ' class="day-events-panel"');
+
+  // Trigger download
+  const blob = new Blob([out], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = mode === 'view'
+    ? 'solomon-society-calendar-view.html'
+    : 'solomon-society-calendar-edit.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const hint = mode === 'view' ? 'copyHintView' : 'copyHintEdit';
+  document.getElementById(hint).textContent = '✓ File downloaded!';
+  setTimeout(function() { document.getElementById(hint).textContent = ''; }, 3000);
+}
+
+// ─── Calendar Rendering ──────────────────────────────────────────────────────
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('monthTitleText').textContent = `${monthNames[month]} ${year}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  days.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'day-header';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  const today = new Date();
+
+  let cells = [];
+  for (let i = firstDay - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, month: month - 1, year, other: true });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, month, year, other: false });
+  while (cells.length % 7 !== 0) { cells.push({ day: cells.length - (firstDay + daysInMonth) + 1, month: month + 1, year, other: true }); }
+
+  cells.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'day-cell' + (c.other ? ' other-month' : '');
+    // Use Date to handle month/year overflow correctly
+    const cellDate = new Date(c.year, c.month, c.day);
+    const dateStr = fmt(cellDate.getFullYear(), cellDate.getMonth()+1, cellDate.getDate());
+
+    if (!c.other && today.getFullYear() === year && today.getMonth() === month && today.getDate() === c.day) {
+      d.classList.add('today');
+    }
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'day-num';
+    numDiv.textContent = c.day;
+    d.appendChild(numDiv);
+
+    // Holidays
+    const dayHols = getHolidaysForDate(dateStr);
+    // User events
+    const dayEvs = events.filter(e => e.date === dateStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+
+    const allItems = [
+      ...dayHols.map(h => ({ ...h, isHoliday: true })),
+      ...dayEvs.map(e => ({ ...e, isHoliday: false }))
+    ];
+
+    const maxShow = 2;
+    allItems.slice(0, maxShow).forEach(item => {
+      const chip = document.createElement('span');
+      chip.className = 'event-chip';
+      if (item.isHoliday) {
+        chip.style.background = item.type === 'us' ? US_HOLIDAY_COLOR : JEW_HOLIDAY_COLOR;
+        chip.style.fontSize = '0.62rem';
+        chip.textContent = item.name;
+        chip.onclick = (e) => { e.stopPropagation(); showHolidayInfo(item, dateStr); };
+      } else {
+        chip.style.background = item.color || COLORS[0];
+        chip.textContent = (item.time ? item.time.substring(0,5)+' ' : '') + item.name;
+        chip.onclick = (e) => { e.stopPropagation(); openEditEvent(item.id); };
+      }
+      d.appendChild(chip);
+    });
+    if (allItems.length > maxShow) {
+      const more = document.createElement('div');
+      more.className = 'more-events';
+      more.textContent = `+${allItems.length - maxShow} more`;
+      d.appendChild(more);
+    }
+
+    d.onclick = () => selectDay(dateStr);
+    grid.appendChild(d);
+  });
+}
+
+function showHolidayInfo(holiday, dateStr) {
+  selectDay(dateStr);
+}
+
+function selectDay(dateStr) {
+  selectedDate = dateStr;
+  const panel = document.getElementById('dayPanel');
+  panel.classList.add('open');
+  const d = new Date(dateStr + 'T12:00:00');
+  document.getElementById('panelDate').textContent = d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  renderPanelEvents(dateStr);
+}
+
+function renderPanelEvents(dateStr) {
+  const container = document.getElementById('panelEvents');
+  const dayHols = getHolidaysForDate(dateStr);
+  const dayEvs = events.filter(e => e.date === dateStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+
+  if (dayHols.length === 0 && dayEvs.length === 0) {
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;padding:0.5rem 0">No events. Add one!</p>';
+    return;
+  }
+  container.innerHTML = '';
+
+  dayHols.forEach(h => {
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    const color = h.type === 'us' ? US_HOLIDAY_COLOR : JEW_HOLIDAY_COLOR;
+    const badge = h.type === 'us' ? '🇺🇸 Federal Holiday' : '🕍 Jewish Holiday';
+    row.innerHTML = `
+      <div class="event-dot" style="background:${color}"></div>
+      <div class="event-info">
+        <div class="event-name">${h.name}</div>
+        <div class="event-time">${badge}</div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  dayEvs.forEach(ev => {
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    row.innerHTML = `
+      <div class="event-dot" style="background:${ev.color||COLORS[0]}"></div>
+      <div class="event-info">
+        <div class="event-name">${ev.name}</div>
+        <div class="event-time">${ev.time ? formatTime(ev.time) : 'All day'}${ev.description ? ' · ' + ev.description : ''}</div>
+      </div>
+    `;
+    row.onclick = () => openEditEvent(ev.id);
+    container.appendChild(row);
+  });
+}
+
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function changeMonth(dir) {
+  currentDate.setMonth(currentDate.getMonth() + dir);
+  renderCalendar();
+  document.getElementById('dayPanel').classList.remove('open');
+}
+
+function goToday() {
+  currentDate = new Date();
+  renderCalendar();
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+let selectedColor = COLORS[0];
+
+function buildColorPicker(current) {
+  selectedColor = current || COLORS[0];
+  const cp = document.getElementById('colorPicker');
+  cp.innerHTML = '';
+  COLORS.forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot' + (c === selectedColor ? ' selected' : '');
+    dot.style.background = c;
+    dot.onclick = () => {
+      selectedColor = c;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+    };
+    cp.appendChild(dot);
+  });
+}
+
+function openAddEvent() {
+  document.getElementById('modalTitle').textContent = 'Add Event';
+  document.getElementById('editId').value = '';
+  document.getElementById('evName').value = '';
+  document.getElementById('evDate').value = selectedDate || new Date().toISOString().split('T')[0];
+  document.getElementById('evTime').value = '';
+  document.getElementById('evDesc').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('deleteConfirm').style.display = 'none';
+  buildColorPicker(COLORS[0]);
+  document.getElementById('eventOverlay').classList.add('open');
+}
+
+function openAddEventOnDate(dateStr) {
+  openAddEvent();
+  document.getElementById('evDate').value = dateStr || '';
+}
+
+function openEditEvent(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  document.getElementById('modalTitle').textContent = 'Edit Event';
+  document.getElementById('editId').value = id;
+  document.getElementById('evName').value = ev.name;
+  document.getElementById('evDate').value = ev.date;
+  document.getElementById('evTime').value = ev.time || '';
+  document.getElementById('evDesc').value = ev.description || '';
+  document.getElementById('deleteBtn').style.display = '';
+  buildColorPicker(ev.color);
+  document.getElementById('eventOverlay').classList.add('open');
+}
+
+function closeEventModal(e) {
+  if (e && e.target !== document.getElementById('eventOverlay')) return;
+  document.getElementById('eventOverlay').classList.remove('open');
+}
+
+function saveEvent() {
+  const name = document.getElementById('evName').value.trim();
+  const date = document.getElementById('evDate').value;
+  if (!name || !date) { alert('Name and date are required.'); return; }
+
+  const id = document.getElementById('editId').value;
+  const ev = {
+    id: id || Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name,
+    date,
+    time: document.getElementById('evTime').value || '',
+    description: document.getElementById('evDesc').value.trim(),
+    color: selectedColor
+  };
+
+  if (id) {
+    const idx = events.findIndex(e => e.id === id);
+    if (idx > -1) events[idx] = ev;
+  } else {
+    events.push(ev);
+  }
+
+  saveToStorage();
+  document.getElementById('eventOverlay').classList.remove('open');
+  renderCalendar();
+  if (selectedDate) renderPanelEvents(selectedDate);
+}
+
+function promptDelete() {
+  const confirm = document.getElementById('deleteConfirm');
+  confirm.style.display = 'flex';
+  document.getElementById('deleteBtn').style.display = 'none';
+}
+
+function cancelDelete() {
+  document.getElementById('deleteConfirm').style.display = 'none';
+  document.getElementById('deleteBtn').style.display = '';
+}
+
+function confirmDelete() {
+  const id = document.getElementById('editId').value;
+  if (!id) return;
+  events = events.filter(e => e.id !== id);
+  saveToStorage();
+  document.getElementById('deleteConfirm').style.display = 'none';
+  document.getElementById('eventOverlay').classList.remove('open');
+  renderCalendar();
+  if (selectedDate) renderPanelEvents(selectedDate);
+}
+
+// ─── Share ───────────────────────────────────────────────────────────────────
+function openShare() {
+  document.getElementById('copyHintView').textContent = '';
+  document.getElementById('copyHintEdit').textContent = '';
+  document.getElementById('shareOverlay').classList.add('open');
+}
+
+function closeShare(e) {
+  if (e && e.target !== document.getElementById('shareOverlay')) return;
+  document.getElementById('shareOverlay').classList.remove('open');
+}
+
+// copyLink removed - using downloadCalendar instead
+
+// ─── Legend ──────────────────────────────────────────────────────────────────
+function applyViewOnlyMode() {
+  if (!isViewOnly) return;
+  // Hide all add/edit UI
+  const addBtn = document.querySelector('.btn-accent[onclick="openAddEvent()"]');
+  if (addBtn) addBtn.style.display = 'none';
+  const shareBtn = document.querySelector('.btn[onclick="openShare()"]');
+  if (shareBtn) shareBtn.style.display = 'none';
+  // Override openEditEvent to do nothing
+  window._openEditEvent = openEditEvent;
+  window.openEditEvent = (id) => { selectDay(events.find(e=>e.id===id)?.date || selectedDate); };
+  // Hide panel add button
+  const panelAdd = document.querySelector('.panel-title .btn-accent');
+  if (panelAdd) panelAdd.style.display = 'none';
+}
+
+function buildLegend() {
+  if (document.getElementById('calLegend')) return;
+  const legend = document.createElement('div');
+  legend.id = 'calLegend';
+  legend.style.cssText = 'display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;font-size:0.8rem;align-items:center;';
+  legend.innerHTML = `
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#1d4ed8;display:inline-block"></span> US Federal Holiday
+    </span>
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#7c3aed;display:inline-block"></span> Jewish Holiday
+    </span>
+    <span style="display:flex;align-items:center;gap:0.4rem;color:var(--muted)">
+      <span style="width:12px;height:12px;border-radius:3px;background:#f97316;display:inline-block"></span> Solomon Society Events
+    </span>
+  `;
+  const navControls = document.querySelector('.nav-controls');
+  navControls.insertAdjacentElement('afterend', legend);
+}
+
+
+// ─── Month/Year Picker ────────────────────────────────────────────────────────
+let pickerYear = new Date().getFullYear();
+
+function togglePicker(e) {
+  e.stopPropagation();
+  const picker = document.getElementById('monthPicker');
+  const title = document.getElementById('monthTitle');
+  const isOpen = picker.classList.contains('open');
+  if (!isOpen) {
+    pickerYear = currentDate.getFullYear();
+    renderPickerGrid();
+    picker.classList.add('open');
+    title.classList.add('open');
+  } else {
+    closePicker();
+  }
+}
+
+function closePicker() {
+  document.getElementById('monthPicker').classList.remove('open');
+  document.getElementById('monthTitle').classList.remove('open');
+}
+
+function pickerChangeYear(dir, e) {
+  e.stopPropagation();
+  pickerYear += dir;
+  renderPickerGrid();
+}
+
+function renderPickerGrid() {
+  document.getElementById('pickerYear').textContent = pickerYear;
+  const grid = document.getElementById('monthGrid');
+  grid.innerHTML = '';
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const today = new Date();
+  monthNames.forEach((name, i) => {
+    const opt = document.createElement('div');
+    opt.className = 'month-option';
+    opt.textContent = name;
+    const isActive = pickerYear === currentDate.getFullYear() && i === currentDate.getMonth();
+    const isToday = pickerYear === today.getFullYear() && i === today.getMonth();
+    if (isActive) opt.classList.add('active');
+    else if (isToday) opt.classList.add('current-month');
+    opt.onclick = (e) => {
+      e.stopPropagation();
+      currentDate = new Date(pickerYear, i, 1);
+      closePicker();
+      renderCalendar();
+      document.getElementById('dayPanel').classList.remove('open');
+    };
+    grid.appendChild(opt);
+  });
+}
+
+// Close picker when clicking outside
+document.addEventListener('click', (e) => {
+  const picker = document.getElementById('monthPicker');
+  if (picker && picker.classList.contains('open')) {
+    if (!document.getElementById('monthTitle').contains(e.target) && !picker.contains(e.target)) {
+      closePicker();
+    }
+  }
+});
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+loadEvents();
+buildLegend();
+renderCalendar();
+applyViewOnlyMode();
+</script>
+
+
+</body></html>
